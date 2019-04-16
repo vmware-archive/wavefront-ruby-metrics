@@ -1,0 +1,17 @@
+language: ruby
+
+rvm:
+  - 2.6
+
+before_install:
+  - gem install test-unit
+  - gem install bundler -v 2.0.1
+
+script:
+  - ruby test/tc_histograms.rb
+  - ruby test/tc_metrics.rb
+  - ruby test/tc_registry.rb
+
+notifications:
+  email:
+    - chitimba@wavefront.com
