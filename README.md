@@ -1,4 +1,4 @@
-# wavefront-ruby-metrics [![Build Status](https://travis-ci.com/yogeshprasad/wavefront-sdk-ruby.svg?branch=master)](https://travis-ci.com/yogeshprasad/wavefront-sdk-ruby)
+# wavefront-ruby-metrics [![Build Status](https://travis-ci.com/wavefrontHQ/wavefront-ruby-metrics.svg?branch=master)](https://travis-ci.com/wavefrontHQ/wavefront-ruby-metrics)
 
 It collects the counter, gauge, and histogram from your ruby code
 
