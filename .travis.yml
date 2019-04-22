@@ -6,6 +6,8 @@ rvm:
 before_install:
   - gem install test-unit
   - gem install bundler -v 2.0.1
+  - gem install concurrent-ruby
+  - gem install tdigest 
 
 script:
   - ruby tests/tc_histograms.rb
