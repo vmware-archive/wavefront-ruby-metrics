@@ -1,7 +1,7 @@
 require 'concurrent'
 require_relative 'metric'
 
-module Meters
+module Measurement
   class Counter < Metric
     # @param name [string] Metric name
     # @param point_tags [Hash] Point tags for counter
@@ -31,21 +31,5 @@ module Meters
       @value.increment(val)
     end
 
-    # Decrement counter by val (default is 1)
-    #
-    # @param val [Integer] Counter decrement by val
-    def dec(val = 1)
-
-      unless val.is_a? Integer
-        raise RangeError, "Counter needs an integer. Given #{val}"
-      end
-
-      @value.increment(-val)
-    end
-
-    # Reset the counter to 0
-    def reset
-      @value.value = 0
-    end
   end
 end

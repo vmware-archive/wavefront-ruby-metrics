@@ -2,6 +2,7 @@
 # It stores all supported type of the metric e.g. Counters, Gauges and Histograms.
 #
 require 'concurrent'
+require 'json'
 require_relative 'meters/counter'
 require_relative 'meters/gauge'
 require_relative 'histogram/histogram'
@@ -21,7 +22,7 @@ module Registry
     def add(metric)
       raise TypeError unless metric.respond_to? :name
 
-      key = metric.name
+      key = encode_key(metric.name, metric.point_tags)
       unless @store.put_if_absent(key, metric).nil?
         raise DuplicateKeyError, "Cannot add duplicate metric into registry: #{key}"
       end
@@ -32,8 +33,8 @@ module Registry
     # Remove the metric from registry
     #
     # @param name [String] name of the metric
-    def del(name)
-      @store.delete(name.to_sym)
+    def del(name, point_tags)
+      @store.delete(encode_key(name, point_tags))
     end
 
     # Add a new Counter metric to the registry
@@ -44,7 +45,7 @@ module Registry
     #
     # @return [Counter] the counter object
     def counter(name, point_tags, initial_value = 0)
-      add(Meters::Counter.new(name, point_tags, initial_value))
+      add(Measurement::Counter.new(name, point_tags, initial_value))
     end
 
     # Add a new Counter metric to the registry
@@ -56,35 +57,49 @@ module Registry
     # @return [Gauge] the gauge object
     def gauge(name, point_tags, initial_value = 0)
       'add a new Gauge metric to the registry'
-      add(Meters::Gauge.new(name, point_tags, initial_value))
+      add(Measurement::Gauge.new(name, point_tags, initial_value))
     end
 
-    def distribution(name, point_tags, accuracy = Meters::Histogram::DEFAULT_ACCURACY,
-                     granularity = Meters::Granularity::MINUTE, max_bins = Meters::Histogram::DEFAULT_MAX_BINS,
+    def distribution(name, point_tags, accuracy = Measurement::Histogram::DEFAULT_ACCURACY,
+                     granularity = Measurement::Granularity::MINUTE, max_bins = Measurement::Histogram::DEFAULT_MAX_BINS,
                       clock_func = nil)
-      add(Meters::Histogram.new(name, point_tags, accuracy, granularity, max_bins, clock_func))
+      add(Measurement::Histogram.new(name, point_tags, accuracy, granularity, max_bins, clock_func))
     end
 
     # Check if metric exists
     #
     # @param name [String] name of the metric
     # @return [Bool]
-    def exist?(name)
-      @store.key?(name.to_sym)
+    def exist?(name, point_tags)
+      @store.key?(encode_key(name, point_tags))
     end
 
     # Get the metric by its name
     #
     # @param name [String] Metric name
+    # @param point_tags [Hash] list of metric point tags
     # @return [Metric] the metric value
-    def get(name)
-      @store[name.to_sym]
+    def get(name, point_tags)
+      @store[encode_key(name, point_tags)]
     end
 
     # Get all the metrics in registry
     # @return list of metrics
     def metrics
       @store.values
+    end
+
+    # Encode the key using point tags to allow a metric with different point tags
+    #
+    # @param key [String] name of the metric
+    # @param tags [Hash] list of metric point tags
+    # @return [String] encoded key
+    def encode_key(key, tags)
+      if !tags.nil? && !tags.empty?
+        key = key.to_s + "-tags="
+        key += tags.to_json
+      end
+      return key
     end
   end
 end

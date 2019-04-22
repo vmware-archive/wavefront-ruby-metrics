@@ -1,4 +1,4 @@
-module Meters
+module Measurement
   class Metric
     attr_reader :name, :point_tags
 

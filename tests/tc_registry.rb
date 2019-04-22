@@ -13,21 +13,21 @@ class RegistryTests < Test::Unit::TestCase
     c0 = r.counter(:counter_0, nil, 0)
     r.counter(:counter_1, {}, 1)
     r.gauge(:gauge, nil, 1)
-    r.distribution(:dist, nil)
+    r.distribution(:dist, {})
 
     assert_raise TypeError do
       r.add(NotMetric.new)
     end
 
-    assert(r.exist?(:counter_0))
-    assert_kind_of(Meters::Counter, r.get(:counter_0))
-    assert_same(c0, r.get(:counter_0))
-    assert_kind_of(Meters::Gauge, r.get(:gauge))
-    assert_kind_of(Meters::Histogram, r.get(:dist))
+    assert(r.exist?(:counter_0, {}))
+    assert_kind_of(Measurement::Counter, r.get(:counter_0,{}))
+    assert_same(c0, r.get(:counter_0,{}))
+    assert_kind_of(Measurement::Gauge, r.get(:gauge,{}))
+    assert_kind_of(Measurement::Histogram, r.get(:dist,{}))
 
     # Delete
-    r.del(:gauge)
-    assert_equal(nil, r.get(:gauge))
+    r.del(:gauge,{})
+    assert_equal(nil, r.get(:gauge,{}))
 
     # Test uniqueness
     assert_raise Registry::MetricsRegistry::DuplicateKeyError do
@@ -42,7 +42,7 @@ class RegistryTests < Test::Unit::TestCase
     threads = 10.times.map do
       Thread.new do
         1000.times do
-          assert_equal(10, r.get(:counter).value)
+          assert_equal(10, r.get(:counter,{}).value)
         end
       end
     end
@@ -62,5 +62,27 @@ class RegistryTests < Test::Unit::TestCase
       end
     end
     assert_equal(19, threads.map(&:join).map(&:value).inject(&:+))
+  end
+
+  def test_with_point_tags
+    store = Registry::MetricsRegistry.new
+    metric_name = "api.count"
+    point_tags = {"key-1" => "val-1", "key-2" => "val-2"}
+    new_point_tags = {"key-3" => "val-3", "key-4" => "val-4"}
+
+    # Add same metric with different point tags
+    store.counter(metric_name, point_tags, 5)
+    store.counter(metric_name, new_point_tags, 10)
+
+    # Verify the metric value
+    assert_equal(5, store.get(metric_name,point_tags).value)
+    assert_equal(10, store.get(metric_name,new_point_tags).value)
+
+    # Delete the metric
+    store.del(metric_name, point_tags)
+
+    # verify the deletion
+    assert_equal(nil, store.get(metric_name,point_tags))
+
   end
 end

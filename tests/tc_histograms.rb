@@ -2,7 +2,7 @@ require 'test/unit'
 require 'concurrent'
 require_relative '../histogram/histogram'
 
-include Meters
+include Measurement
 class HistogramTests < Test::Unit::TestCase
   def setup
     @clock = Concurrent::AtomicFixnum.new(0)

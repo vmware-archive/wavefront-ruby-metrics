@@ -1,7 +1,7 @@
 require 'concurrent'
 require_relative 'metric'
 
-module Meters
+module Measurement
   class Gauge < Metric
     # @param name [string] Metric name
     # @param point_tags [Hash] Point tags for counter

@@ -4,7 +4,7 @@ require 'tdigest'
 
 require_relative '../meters/metric'
 
-module Meters
+module Measurement
 
   class Granularity
     MINUTE = 60 * 1000
@@ -59,7 +59,7 @@ module Meters
 
   
 
-  class Histogram < Meters::Metric
+  class Histogram < Measurement::Metric
     DEFAULT_ACCURACY = 100
     DEFAULT_MAX_BINS = 10
 
