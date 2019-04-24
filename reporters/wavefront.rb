@@ -11,22 +11,22 @@ module Reporters
     # @param registry [String] metrics store
     # @param reporting_interval [Integer] interval to report metrics to wavefront
     # @param host [String] host name
-    def initialize(sender, registry, reporting_interval = 5, host = Socket.gethostname)
+    def initialize(sender, registry = nil, reporting_interval = 5, host = Socket.gethostname)
       super(registry, reporting_interval)
       @sender = sender
       @host = host
     end
 
-    @@gmap = {Meters::Granularity::MINUTE => MINUTE,
-              Meters::Granularity::HOUR => HOUR,
-              Meters::Granularity::DAY => DAY}
+    @@gmap = {Measurement::Granularity::MINUTE => MINUTE,
+              Measurement::Granularity::HOUR => HOUR,
+              Measurement::Granularity::DAY => DAY}
 
     # Sends data to Wavefront cluster
     def report_now
       @registry.metrics.each do |data|
-        if data.class == Meters::Counter or data.class == Meters::Gauge
+        if data.class == Measurement::Counter or data.class == Measurement::Gauge
           @sender.send_metric(data.name, data.value, nil, @host, data.point_tags)
-        elsif data.class == Meters::Histogram
+        elsif data.class == Measurement::Histogram
           dist = data.flush_distributions
           dist.each do |dist|
             @sender.send_distribution(data.name, dist.centroids, Set.new([@@gmap[dist.granularity]]),

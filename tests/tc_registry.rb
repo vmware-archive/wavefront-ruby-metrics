@@ -11,7 +11,7 @@ class RegistryTests < Test::Unit::TestCase
   def test_types
     r = Registry::MetricsRegistry.new
     c0 = r.counter(:counter_0, nil, 0)
-    r.counter(:counter_1, {}, 1)
+    r.counter(:counter_1, {}, 10)
     r.gauge(:gauge, nil, 1)
     r.distribution(:dist, {})
 
@@ -30,9 +30,7 @@ class RegistryTests < Test::Unit::TestCase
     assert_equal(nil, r.get(:gauge,{}))
 
     # Test uniqueness
-    assert_raise Registry::MetricsRegistry::DuplicateKeyError do
-      r.counter(:counter_1, nil, 10)
-    end
+    assert_equal(10, r.counter(:counter_1, {}, 25).value)
   end
 
   def test_concurrent_reads
@@ -51,17 +49,16 @@ class RegistryTests < Test::Unit::TestCase
 
   def test_concurrent_writes
     r = Registry::MetricsRegistry.new
-    threads = 20.times.map do
+    r.counter(:same_name, nil, 1)
+    threads = 23.times.map do |x|
       Thread.new do
         begin
-          r.counter(:same_name, nil, 1)
-          0
-        rescue Registry::MetricsRegistry::DuplicateKeyError
-          1
+          r.counter(:same_name, nil, 7 + 10 * x)
         end
       end
     end
-    assert_equal(19, threads.map(&:join).map(&:value).inject(&:+))
+
+    assert_equal(23, threads.map(&:join).map(&:value).map(&:value).inject(&:+))
   end
 
   def test_with_point_tags

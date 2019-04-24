@@ -7,7 +7,7 @@ module Measurement
     def initialize(name, point_tags)
       # TODO: sanitize/validate both?
       @name = name.to_sym
-      @point_tags = point_tags&.clone || {}
+      @point_tags = (point_tags&.clone || {}).freeze
     end
   end
 end

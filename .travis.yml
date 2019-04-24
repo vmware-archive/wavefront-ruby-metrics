@@ -1,6 +1,7 @@
 language: ruby
 
 rvm:
+  - 2.3
   - 2.6
 
 before_install:
@@ -10,9 +11,7 @@ before_install:
   - gem install tdigest 
 
 script:
-  - ruby tests/tc_histograms.rb
-  - ruby tests/tc_metrics.rb
-  - ruby tests/tc_registry.rb
+  - ruby tests/tc_all.rb
 
 notifications:
   email:

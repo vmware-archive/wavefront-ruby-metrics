@@ -1,7 +1,13 @@
+require_relative '../registry'
+
 module Reporters
   class Reporter
-    def initialize(registry=nil, reporting_interval=5)
-      @registry = registry
+    @@global_registry = Registry::MetricsRegistry.new
+
+    attr_reader :registry
+
+    def initialize(registry = nil, reporting_interval = 5)
+      @registry = registry || @@global_registry
       @reporting_interval = reporting_interval
       @lock = Mutex.new
       @closed = true

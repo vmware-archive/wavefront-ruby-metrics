@@ -13,7 +13,7 @@ class HistogramTests < Test::Unit::TestCase
   end
 
   def new_hist
-    Histogram.new('Histogram-1', nil, Histogram::DEFAULT_ACCURACY, Granularity::MINUTE, Histogram::DEFAULT_MAX_BINS, method(:get_time))
+    Histogram.new('Histogram-1', nil, accuracy: Histogram::DEFAULT_ACCURACY, granularity: Granularity::MINUTE, max_bins: Histogram::DEFAULT_MAX_BINS, clock_func: method(:get_time))
   end
 
   def create_pow10

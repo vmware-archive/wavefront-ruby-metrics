@@ -65,7 +65,7 @@ module Measurement
 
     attr_reader :granularity, :accuracy, :max_bins
 
-    def initialize(name, point_tags, accuracy = DEFAULT_ACCURACY, granularity = Granularity::MINUTE, max_bins = DEFAULT_MAX_BINS, clock_func = nil)
+    def initialize(name, point_tags, accuracy: DEFAULT_ACCURACY, granularity: Granularity::MINUTE, max_bins: DEFAULT_MAX_BINS, clock_func: nil)
       super(name, point_tags)
       @mutex = Mutex.new
       @accuracy = accuracy
@@ -111,7 +111,9 @@ module Measurement
     end
 
     def mean
-      sum / count
+      c = count
+      return Float::NAN if c==0
+      sum / c
     end
 
     def min
