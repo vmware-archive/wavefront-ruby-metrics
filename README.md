@@ -77,7 +77,6 @@ end
 client = Wavefront::WavefrontDirectIngestionClient.new(server, token)
 store = Registry::MetricsRegistry.new
 reporter = Reporters::Wavefront.new(client, store)
-reporter.start
 
 $test_count = store.counter("test.call", {"tag1"=>"value1", "tag2"=>"value2"}, 0)
 5.times do

@@ -17,9 +17,9 @@ module Reporters
       @host = host
     end
 
-    @@gmap = {Measurement::Granularity::MINUTE => MINUTE,
+    GMAP = {Measurement::Granularity::MINUTE => MINUTE,
               Measurement::Granularity::HOUR => HOUR,
-              Measurement::Granularity::DAY => DAY}
+              Measurement::Granularity::DAY => DAY}.freeze
 
     # Sends data to Wavefront cluster
     def report_now
@@ -29,7 +29,7 @@ module Reporters
         elsif data.class == Measurement::Histogram
           dist = data.flush_distributions
           dist.each do |dist|
-            @sender.send_distribution(data.name, dist.centroids, Set.new([@@gmap[dist.granularity]]),
+            @sender.send_distribution(data.name, dist.centroids, Set.new([GMAP[dist.granularity]]),
                                       (dist.timestamp/1000).to_i, @host, data.point_tags)
           end
         else

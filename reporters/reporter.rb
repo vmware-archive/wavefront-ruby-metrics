@@ -12,6 +12,7 @@ module Reporters
       @lock = Mutex.new
       @closed = true
       @task = nil
+      start
     end
 
     # Start reporting
@@ -29,8 +30,13 @@ module Reporters
       # Flush all buffer before close the client.
       @lock.synchronize do
         @closed = true
-        @task.join
+        @task.kill.join
         @task = nil
+        begin  
+          report_now
+        rescue Exception => e
+          puts "Reporter Exception: #{e.inspect}"
+        end
       end
     end
 
@@ -39,12 +45,13 @@ module Reporters
       while !@closed do
         sleep(@reporting_interval)
         begin
-        report_now
+          Thread.handle_interrupt(RuntimeError => :never) do
+            report_now
+          end
         rescue Exception => e
             puts "Reporter Exception: #{e.inspect}"
-          end
+        end
       end
-      report_now
     end
 
     # This will report the data to the specific reporter. All reporter needs to implement this.
