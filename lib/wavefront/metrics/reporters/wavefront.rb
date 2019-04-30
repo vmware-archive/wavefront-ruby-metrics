@@ -11,11 +11,11 @@ module Reporters
     # @param registry [String] metrics store
     # @param reporting_interval_sec [Integer] interval to report metrics to wavefront
     # @param host [String] host name
-    def initialize(sender, registry: nil, application_tags: {}, reporting_interval_sec: 5, host: Socket.gethostname)
+    def initialize(sender, application_tags, registry: nil, reporting_interval_sec: 5, host: Socket.gethostname)
       super(registry, reporting_interval_sec)
       @sender = sender
       @host = host
-      @application_tags = application_tags.freeze
+      @application_tags = application_tags.as_dict.freeze
     end
 
     GMAP = {Measurement::Granularity::MINUTE => MINUTE,
@@ -26,7 +26,7 @@ module Reporters
     def report_now
       @registry.metrics.each do |data|
         if data.class == Measurement::Counter or data.class == Measurement::Gauge
-          result = @registry.get_metrics(data)
+          result = @registry.get_metric_fields(data)
           @sender.send_metric(data.name.to_s + "." + result.keys[0].to_s, data.value,
                               nil, @host, data.point_tags.merge(@application_tags))
         elsif data.class == Measurement::Histogram

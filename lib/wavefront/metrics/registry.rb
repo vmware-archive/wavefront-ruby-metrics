@@ -101,7 +101,7 @@ module Registry
     #
     # @param metric [Metric] metric object
     # @return [Hash] metric list
-    def get_metrics(metric)
+    def get_metric_fields(metric)
       if metric.class == Measurement::Counter
         return {:count => metric.value}
       elsif metric.class == Measurement::Gauge

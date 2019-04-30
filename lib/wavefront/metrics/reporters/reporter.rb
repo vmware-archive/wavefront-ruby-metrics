@@ -35,7 +35,7 @@ module Reporters
         begin  
           report_now
         rescue Exception => e
-          raise e
+          puts "Reporter Exception: #{e.inspect}"
         end
       end
     end
