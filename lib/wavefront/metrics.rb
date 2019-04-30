@@ -1,2 +1,2 @@
-require_relative '../../lib/wavefront/metrics/registry'
-require_relative '../../lib/wavefront/metrics/reporters/wavefront'
+require_relative 'metrics/registry'
+require_relative 'metrics/reporters/wavefront'

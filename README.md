@@ -1,6 +1,13 @@
 # wavefront-ruby-metrics [![Build Status](https://travis-ci.com/yogeshprasad/wavefront-ruby-metrics.svg?branch=master)](https://travis-ci.com/yogeshprasad/wavefront-ruby-metrics)
 
-It collects the counter, gauge, and histogram from your ruby code
+It collects the counter, gauge, and histogram from your ruby code.
+
+## Requirements and Installation
+Ruby version >= 2.3.0 is supported.
+
+```
+gem install wavefront-metrics
+```
 
 ## Core Features
 ### Counter
@@ -14,7 +21,7 @@ a mechanism to compute, store, and use distributions of metrics.
 ## Examples
 ### Counter
 ```ruby
-require_relative 'registry'
+require 'wavefront/metrics'
 
 def test
   $test_count.inc
@@ -33,7 +40,7 @@ puts $test_count.point_tags    # {"tag1"=>"value1", "tag2"=>"value2"}
 ```
 #### Gauge
 ```ruby
-require_relative 'registry'
+require 'wavefront/metrics'
 
 store = Registry::MetricsRegistry.new
 test_gauge = store.gauge("test.gauge", {"tag1"=>"value1", "tag2"=>"value2"}, 0)
@@ -45,7 +52,7 @@ puts test_gauge.point_tags    # {"tag1"=>"value1", "tag2"=>"value2"}
  ```
 #### Histogram
 ```ruby
-require_relative 'registry'
+require 'wavefront/metrics'
 
 store = Registry::MetricsRegistry.new
 test_hist = store.distribution("test.histogram", {"tag1"=>"value1", "tag2"=>"value2"})
@@ -65,8 +72,7 @@ puts test_hist.mean          # 3.6999999999999997
 Wavefront reporter is used to reporting collected data to the Wavefront cluster via proxy or direct ingestion.
 For more information about creating wavefront sender [click here](https://github.com/wavefrontHQ/wavefront-sdk-ruby/blob/master/README.md)
 ```ruby
-require_relative '../registry'
-require_relative '../reporters/wavefront'
+require 'wavefront/metrics'
 require 'wavefront/client/proxy'
 
 def test
