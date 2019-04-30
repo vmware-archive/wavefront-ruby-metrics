@@ -1,6 +1,6 @@
 # wavefront-ruby-metrics [![Build Status](https://travis-ci.com/yogeshprasad/wavefront-ruby-metrics.svg?branch=master)](https://travis-ci.com/yogeshprasad/wavefront-ruby-metrics)
 
-It collects the counter, gauge, and histogram from your ruby code.
+Captures application-level metrics (counters, gauges & histograms) for your ruby code.
 
 ## Requirements and Installation
 Ruby version >= 2.3.0 is supported.
