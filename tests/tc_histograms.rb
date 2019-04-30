@@ -1,6 +1,6 @@
 require 'test/unit'
 require 'concurrent'
-require_relative '../histogram/histogram'
+require_relative '../lib/wavefront/metrics/histogram/histogram'
 
 include Measurement
 class HistogramTests < Test::Unit::TestCase

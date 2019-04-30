@@ -6,9 +6,9 @@ module Reporters
 
     attr_reader :registry
 
-    def initialize(registry = nil, reporting_interval = 5)
+    def initialize(registry = nil, reporting_interval_sec = 5)
       @registry = registry || @@global_registry
-      @reporting_interval = reporting_interval
+      @reporting_interval_sec = reporting_interval_sec
       @lock = Mutex.new
       @closed = true
       @task = nil
@@ -35,7 +35,7 @@ module Reporters
         begin  
           report_now
         rescue Exception => e
-          puts "Reporter Exception: #{e.inspect}"
+          raise e
         end
       end
     end
@@ -43,7 +43,7 @@ module Reporters
     # Flush the data into scheduled interval.
     def schedule_task
       while !@closed do
-        sleep(@reporting_interval)
+        sleep(@reporting_interval_sec)
         begin
           Thread.handle_interrupt(RuntimeError => :never) do
             report_now

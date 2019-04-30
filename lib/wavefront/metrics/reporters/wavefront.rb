@@ -9,10 +9,10 @@ module Reporters
   class Wavefront < Reporter
     # @param sender [WavefrontClient] wavefront Direct/Proxy Client
     # @param registry [String] metrics store
-    # @param reporting_interval [Integer] interval to report metrics to wavefront
+    # @param reporting_interval_sec [Integer] interval to report metrics to wavefront
     # @param host [String] host name
-    def initialize(sender, registry = nil, reporting_interval = 5, host = Socket.gethostname)
-      super(registry, reporting_interval)
+    def initialize(sender, registry = nil, reporting_interval_sec = 5, host = Socket.gethostname)
+      super(registry, reporting_interval_sec)
       @sender = sender
       @host = host
     end
@@ -25,12 +25,13 @@ module Reporters
     def report_now
       @registry.metrics.each do |data|
         if data.class == Measurement::Counter or data.class == Measurement::Gauge
-          @sender.send_metric(data.name, data.value, nil, @host, data.point_tags)
+          result = @registry.get_metrics(data)
+          @sender.send_metric(data.name.to_s + "." + result.keys[0].to_s, data.value, nil, @host, data.point_tags)
         elsif data.class == Measurement::Histogram
           dist = data.flush_distributions
           dist.each do |dist|
             @sender.send_distribution(data.name, dist.centroids, Set.new([GMAP[dist.granularity]]),
-                                      (dist.timestamp/1000).to_i, @host, data.point_tags)
+                                      dist.timestamp.to_i, @host, data.point_tags)
           end
         else
           puts "Metrics type not supported"

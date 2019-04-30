@@ -1,9 +1,9 @@
 require 'test/unit'
-require_relative '../registry'
-require_relative '../histogram/histogram'
-require_relative '../meters/metric'
-require_relative '../meters/counter'
-require_relative '../meters/gauge'
+require_relative '../lib/wavefront/metrics/registry'
+require_relative '../lib/wavefront/metrics/histogram/histogram'
+require_relative '../lib/wavefront/metrics/meters/metric'
+require_relative '../lib/wavefront/metrics/meters/counter'
+require_relative '../lib/wavefront/metrics/meters/gauge'
 
 class RegistryTests < Test::Unit::TestCase
   class NotMetric; end

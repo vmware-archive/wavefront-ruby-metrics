@@ -1,7 +1,7 @@
 require 'test/unit'
-require_relative '../meters/metric'
-require_relative '../meters/counter'
-require_relative '../meters/gauge'
+require_relative '../lib/wavefront/metrics/meters/metric'
+require_relative '../lib/wavefront/metrics/meters/counter'
+require_relative '../lib/wavefront/metrics/meters/gauge'
 
 class TestMetrics < Test::Unit::TestCase
   def test_metric_base

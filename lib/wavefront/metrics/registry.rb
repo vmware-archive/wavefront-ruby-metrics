@@ -96,5 +96,19 @@ module Registry
       end
       return key
     end
+
+    # Return the metric value with suffix
+    #
+    # @param metric [Metric] metric object
+    # @return [Hash] metric list
+    def get_metrics(metric)
+      if metric.class == Measurement::Counter
+        return {:count => metric.value}
+      elsif metric.class == Measurement::Gauge
+        return {:value => metric.value}
+      else
+        return {}
+      end
+    end
   end
 end
