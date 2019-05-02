@@ -5,13 +5,10 @@ rvm:
   - 2.6
 
 before_install:
-  - gem install test-unit
-  - gem install bundler -v 2.0.1
-  - gem install concurrent-ruby
-  - gem install tdigest 
+  - gem install bundler -v 2.0.1 --no-rdoc --no-ri
 
 script:
-  - ruby tests/tc_all.rb
+  - bundler exec ruby tests/tc_all.rb
 
 notifications:
   email:

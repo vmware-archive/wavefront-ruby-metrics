@@ -1,4 +1,4 @@
-# wavefront-ruby-metrics [![Build Status](https://travis-ci.com/yogeshprasad/wavefront-ruby-metrics.svg?branch=master)](https://travis-ci.com/yogeshprasad/wavefront-ruby-metrics)
+# wavefront-ruby-metrics [![Build Status](https://travis-ci.com/wavefrontHQ/wavefront-ruby-metrics.svg?branch=master)](https://travis-ci.com/wavefrontHQ/wavefront-ruby-metrics)
 
 Captures application-level metrics (counters, gauges & histograms) for your ruby code.
 
@@ -73,7 +73,8 @@ Wavefront reporter is used to reporting collected data to the Wavefront cluster 
 For more information about creating wavefront sender [click here](https://github.com/wavefrontHQ/wavefront-sdk-ruby/blob/master/README.md)
 ```ruby
 require 'wavefront/metrics'
-require 'wavefront/client/proxy'
+require 'wavefront/client'
+
 
 def test
     $test_count.inc
@@ -82,7 +83,7 @@ end
 
 client = Wavefront::WavefrontDirectIngestionClient.new(server, token)
 store = Registry::MetricsRegistry.new
-reporter = Reporters::Wavefront.new(client, store)
+reporter = Reporters::Wavefront.new(client, Wavefront::ApplicationTags.new(application="beachshirts", service="shopping", cluster: "us-west-2", shard: "primary"), registry: store)
 
 $test_count = store.counter("test.call", {"tag1"=>"value1", "tag2"=>"value2"}, 0)
 5.times do
