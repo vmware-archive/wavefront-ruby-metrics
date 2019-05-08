@@ -28,7 +28,7 @@ module Reporters
         if data.class == Measurement::Counter or data.class == Measurement::Gauge
           result = @registry.get_metric_fields(data)
           @sender.send_metric(data.name.to_s + "." + result.keys[0].to_s, data.value,
-                              nil, @host, data.point_tags.merge(@application_tags))
+            Time.now.to_i, @host, data.point_tags.merge(@application_tags))
         elsif data.class == Measurement::Histogram
           dist = data.flush_distributions
           dist.each do |dist|
