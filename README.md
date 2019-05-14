@@ -16,7 +16,7 @@ Counters show information over time. Think of a person with a counter at the ent
 A gauge shows the current value for each point in time. Think of a thermometer that shows the current temperature or a gauge that shows how much electricity your Tesla has left.
 
 ### Histogram
-a mechanism to compute, store, and use distributions of metrics.
+A mechanism to compute, store, and use distributions of metrics.
 
 ## Examples
 ### Counter
