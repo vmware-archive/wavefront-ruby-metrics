@@ -92,3 +92,5 @@ end
 
 reporter.stop
  ```    
+## Monitoring the SDK
+See the [diagnostic metrics documentation](docs/internal_metrics.md) for details on the internal metrics that this SDK collects and reports to Wavefront.

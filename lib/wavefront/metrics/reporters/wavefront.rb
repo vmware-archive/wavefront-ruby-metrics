@@ -26,7 +26,7 @@ module Reporters
       @report_errors = @internal_store.counter("errors");
 
       @internal_reporter = ::Wavefront::InternalReporter.new( @sender, @internal_store)
-      super(registry, reporting_interval_sec)
+      super(registry, reporting_interval_sec, @internal_reporter)
     end
 
     GMAP = { Measurement::Granularity::MINUTE => ::Wavefront::MINUTE,

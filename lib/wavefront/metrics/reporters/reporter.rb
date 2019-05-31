@@ -6,8 +6,9 @@ module Reporters
 
     attr_reader :registry
 
-    def initialize(registry = nil, reporting_interval_sec = 5)
+    def initialize(registry = nil, reporting_interval_sec = 5, internal_reporter = nil)
       @registry = registry || @@global_registry
+      @internal_reporter = internal_reporter
       @reporting_interval_sec = reporting_interval_sec
       @lock = Mutex.new
       @closed = true
@@ -34,6 +35,7 @@ module Reporters
         @task = nil
         begin  
           report_now
+          @internal_reporter.stop if @internal_reporter
         rescue Exception => e
           puts "Reporter Exception: #{e.inspect}"
         end
