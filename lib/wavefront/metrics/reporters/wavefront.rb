@@ -19,13 +19,15 @@ module Reporters
       @sender = sender
       @default_source = host
       @application_tags = application_tags.as_dict.freeze
-      @internal_store = ::Wavefront::InternalMetricsRegistry.new(::Wavefront::SDK_METRIC_PREFIX + ".metrics.reporter", @application_tags)
-      @gauges_reported = @internal_store.counter("gauges.reported");
-      @counters_reported = @internal_store.counter("counters.reported");
-      @wfhistograms_reported = @internal_store.counter("wavefront_histograms.reported");
-      @report_errors = @internal_store.counter("errors");
 
-      @internal_reporter = ::Wavefront::InternalReporter.new( @sender, @internal_store)
+      # internal metrics
+      @internal_store = ::Wavefront::InternalMetricsRegistry.new(::Wavefront::SDK_METRIC_PREFIX + '.metrics.reporter', @application_tags)
+      @gauges_reported = @internal_store.counter('gauges.reported')
+      @counters_reported = @internal_store.counter('counters.reported')
+      @wfhistograms_reported = @internal_store.counter('wavefront_histograms.reported')
+      @report_errors = @internal_store.counter('errors')
+      @internal_reporter = ::Wavefront::InternalReporter.new(@sender, @internal_store)
+
       super(registry, reporting_interval_sec, @internal_reporter)
     end
 
@@ -39,7 +41,7 @@ module Reporters
         begin
           if (data.class == Measurement::Counter) || (data.class == Measurement::Gauge)
             result = @registry.get_metric_fields(data)
-            @sender.send_metric(data.name.to_s + '.' + result.keys[0].to_s, data.value,
+            @sender.send_metric("#{data.name}.#{result.keys[0]}", data.value,
                                 (Time.now.to_f * 1000).round, @default_source, data.point_tags.merge(@application_tags))
 
             if data.class == Measurement::Counter
@@ -58,11 +60,11 @@ module Reporters
 
             @wfhistograms_reported.inc
           else
-            Wavefront.logger.warn 'Metric is dropped by the reporter for type: #{data.class}'
+            ::Wavefront.logger.warn "Unsupported metric type: #{data.class}"
           end
         rescue StandardError => e
           @report_errors.inc
-          Wavefront.logger.warn 'Unable to report to Wavefront. Error: #{e}'
+          ::Wavefront.logger.error "Unable to report to Wavefront. Error: #{e.message}"
         end
       end
     end

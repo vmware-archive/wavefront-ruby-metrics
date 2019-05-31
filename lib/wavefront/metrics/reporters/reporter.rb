@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../registry'
 
 module Reporters
@@ -10,50 +12,25 @@ module Reporters
       @registry = registry || @@global_registry
       @internal_reporter = internal_reporter
       @reporting_interval_sec = reporting_interval_sec
+
       @lock = Mutex.new
-      @closed = true
-      @task = nil
       start
     end
 
     # Start reporting
     def start
       @lock.synchronize do
-        if @closed
-          @closed = false
-          @task = Thread.start {schedule_task}
-        end
+        @timer&.stop(0.5)
+        @timer = ::Wavefront::EarlyTickTimer.new(@reporting_interval_sec, false) { report_now }
       end
     end
 
     # Stop reporting
-    def stop
-      # Flush all buffer before close the client.
-      @lock.synchronize do
-        @closed = true
-        @task.kill.join
-        @task = nil
-        begin  
-          report_now
-          @internal_reporter.stop if @internal_reporter
-        rescue Exception => e
-          puts "Reporter Exception: #{e.inspect}"
-        end
-      end
-    end
-
-    # Flush the data into scheduled interval.
-    def schedule_task
-      while !@closed do
-        sleep(@reporting_interval_sec)
-        begin
-          Thread.handle_interrupt(RuntimeError => :never) do
-            report_now
-          end
-        rescue Exception => e
-            puts "Reporter Exception: #{e.inspect}"
-        end
-      end
+    def stop(timeout = 3)
+      # flush all metrics at end
+      @timer.stop(timeout)
+      report_now
+      @internal_reporter&.stop
     end
 
     # This will report the data to the specific reporter. All reporter needs to implement this.
